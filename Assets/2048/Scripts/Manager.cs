@@ -20,7 +20,7 @@ public class Manager : MonoBehaviour {
 	// default value for the high score
 	private int highscore = 0;
 
-	public static readonly float[] gridY = new float[4] {0.95f,2.65f,4.35f,6.05f};
+	public static readonly float[] gridY = new float[4] {-1.5f,-0.5f,0.5f,1.5f};
 
 	// these values define our board size - you can do a new game using a 5x5 or 6x6 size
 	public static Tile[,] grid = new Tile[4,4];
@@ -258,19 +258,19 @@ public class Manager : MonoBehaviour {
 		if(Random.value < 0.88f)
 			startValue = 2; // 12% to be a 2
 
-		GameObject tempTile = (GameObject)Instantiate (tileFab, gridToWorld (xx, yy), Quaternion.Euler (0, 0, 0));
+		GameObject tempTile = (GameObject)Instantiate (tileFab, gridToWorld (xx, yy, 1), Quaternion.Euler (0, 0, 0));
 		grid [xx, yy] = tempTile.GetComponent<Tile>();
 		grid [xx, yy].tileValue = startValue;
 	}
 
-	public static Vector2 gridToWorld(int x, int y) {
-		return new Vector2(1.7f * x  + 0.95f, gridY [y]);
+	public static Vector3 gridToWorld(int x, int y, int z) {
+		return new Vector3(x  - 1f , gridY [y], -0.58f);
 	}
 	
 	public static Vector2 worldToGrid(float x, float y) {
 		for (int i = 0; i <= 3; i++) {
 			if(gridY[i] == y) y = i;
 		}
-		return new Vector2((x - 0.95f)/1.7f, y);
+		return new Vector2((x + 1), y);
 	}
 }

@@ -5,7 +5,7 @@ using System.Collections;
 
 // for each cell we create an instantiation which is able to move or combine with others
 public class Tile : MonoBehaviour {
-
+	public Transform parent;
 	public GameObject textFab;
 	// simple sound when a cell moves
 	public AudioClip FX;
@@ -14,16 +14,20 @@ public class Tile : MonoBehaviour {
 	// same value? Do a combinaison...
 	public bool combined;
 	
-	Vector2 movePosition;
+	Vector3 movePosition;
 	bool combine;
 	Tile cTile;
 	bool grow;
-
+	int z;
 	void Start () {
+
+		parent = GameObject.Find ("Sphere").GetComponent<Transform>();
+
 		// position of our cell and creation
-		movePosition = transform.position;
+		movePosition = new Vector3(transform.position.x, transform.position.y, 1);
 		textFab = (GameObject)Instantiate (textFab,transform.position,Quaternion.Euler(0,0,0));
 		Change (tileValue);
+		//transform.SetParent(parent);
 	}
 
 	void Update () {
@@ -51,10 +55,10 @@ public class Tile : MonoBehaviour {
 		}
 		// create a scale FX when it spawns
 		if(transform.localScale.x != 150 && !grow)
-			transform.localScale = Vector3.MoveTowards(transform.localScale,new Vector3(150f,150f,1f), 500 * Time.deltaTime);
+			transform.localScale = Vector3.MoveTowards(transform.localScale,new Vector3(0.9f,0.9f,0.9f), 500 * Time.deltaTime);
 		if(grow) { // create a scale FX when cell combines with another
 			Manager.done = false;
-			transform.localScale = Vector3.MoveTowards(transform.localScale,new Vector3(187.5f,187.5f,1f), 500 * Time.deltaTime);
+			transform.localScale = Vector3.MoveTowards(transform.localScale,new Vector3(0.9f,0.9f,0.9f), 500 * Time.deltaTime);
 			if(transform.localScale == new Vector3(187.5f,187.5f,1f))
                 grow = false;
 		} else
@@ -65,7 +69,7 @@ public class Tile : MonoBehaviour {
 
 		tileValue = newValue;
 		// after combination we change tile's colour
-		GetComponent<SpriteRenderer>().color = Manager.tileColors [Mathf.RoundToInt(Mathf.Log (tileValue, 2) - 1)];
+		GetComponent<MeshRenderer>().material.color = Manager.tileColors [Mathf.RoundToInt(Mathf.Log (tileValue, 2) - 1)];
 		textFab.GetComponent<GUIText>().text = tileValue.ToString();
 		// colour value which is written on our cell
 		textFab.GetComponent<GUIText>().color = new Color (0.17f, 0.17f, 0.27f);
@@ -73,7 +77,7 @@ public class Tile : MonoBehaviour {
 
 	public bool Move (int x, int y) {
 
-		movePosition = Manager.gridToWorld (x, y);
+		movePosition = Manager.gridToWorld (x, y, z);
 
 		if(transform.position != (Vector3)movePosition) {
 			if(Manager.grid [x, y] != null) {
